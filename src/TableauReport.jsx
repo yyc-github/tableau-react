@@ -36,8 +36,8 @@ class TableauReport extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     const isReportChanged = nextProps.url !== this.props.url;
-    const isFiltersChanged = !shallowequal(this.props.filters, nextProps.filters, this.compareArrays);
-    const isParametersChanged = !shallowequal(this.props.parameters, nextProps.parameters);
+    const isFiltersChanged = !shallowequal(this.state.filters, nextProps.filters, this.compareArrays);
+    const isParametersChanged = !shallowequal(this.state.parameters, nextProps.parameters);
     const isLoading = this.state.loading;
 
     // Only report is changed - re-initialize
@@ -138,12 +138,17 @@ class TableauReport extends React.Component {
         !this.state.parameters.hasOwnProperty(key) ||
         this.state.parameters[key] !== parameters[key]
       ) {
-        const val = parameters[key];
-        promises.push(this.workbook.changeParameterValueAsync(key, val));
+        const val = parameters[key];          
+        if (this.workbook && this.workbook.changeParameterValueAsync) {
+          promises.push(this.workbook.changeParameterValueAsync(key, val));
+        }
       }
     }
 
-    this.onComplete(promises, () => this.setState({ loading: false, parameters }));
+    const appliedParameters = this.workbook && this.workbook.changeParameterValueAsync ? parameters : this.state.parameters;
+    if (this.workbook && this.workbook.changeParameterValueAsync) {
+      this.onComplete(promises, () => this.setState({ loading: false, appliedParameters }));
+    }
   }
 
   /**
