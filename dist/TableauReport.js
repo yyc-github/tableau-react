@@ -82,7 +82,7 @@ var TableauReport = function (_React$Component) {
       var isLoading = this.state.loading;
 
       // Only report is changed - re-initialize
-      if (isReportChanged) {
+      if (isReportChanged || nextProps.token !== this.props.token) {
         this.initTableau();
       }
 
@@ -94,11 +94,6 @@ var TableauReport = function (_React$Component) {
       // Only parameters are changed, apply via the API
       if (!isReportChanged && isParametersChanged && !isLoading) {
         this.applyParameters(nextProps.parameters);
-      }
-
-      // token change, validate it.
-      if (nextProps.token !== this.props.token) {
-        this.setState({ didInvalidateToken: false });
       }
     }
 
@@ -147,17 +142,10 @@ var TableauReport = function (_React$Component) {
       var parsed = _url2.default.parse(this.props.url, true);
       var query = '?:embed=yes&:comments=no&:toolbar=yes&:refresh=yes';
 
-      if (!this.state.didInvalidateToken && token) {
-        this.invalidateToken();
+      if (token) {
         return (0, _tokenizeUrl2.default)(this.props.url, token) + query;
       }
-
       return parsed.protocol + '//' + parsed.host + parsed.pathname + query;
-    }
-  }, {
-    key: 'invalidateToken',
-    value: function invalidateToken() {
-      this.setState({ didInvalidateToken: true });
     }
 
     /**
