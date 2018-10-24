@@ -41,7 +41,7 @@ class TableauReport extends React.Component {
     const isLoading = this.state.loading;
 
     // Only report is changed - re-initialize
-    if (isReportChanged || nextProps.token !== this.props.token) {
+    if (isReportChanged) {
       this.initTableau();
     }
 
@@ -53,6 +53,11 @@ class TableauReport extends React.Component {
     // Only parameters are changed, apply via the API
     if (!isReportChanged && isParametersChanged && !isLoading) {
       this.applyParameters(nextProps.parameters);
+    }
+
+    // token change, validate it.
+    if (nextProps.token !== this.props.token) {
+      this.setState({ didInvalidateToken: false });
     }
   }
 
@@ -87,12 +92,17 @@ class TableauReport extends React.Component {
     const parsed = url.parse(this.props.url, true);
     const query = '?:embed=yes&:comments=no&:toolbar=yes&:refresh=yes';
 
-    if (token) {
+    if (!this.state.didInvalidateToken && token) {
+      this.invalidateToken();
       return tokenizeUrl(this.props.url, token) + query;
     }
+
     return parsed.protocol + '//' + parsed.host + parsed.pathname + query;
   }
 
+  invalidateToken() {
+    this.setState({ didInvalidateToken: true });
+  }
 
   /**
    * Asynchronously applies filters to the worksheet, excluding those that have
