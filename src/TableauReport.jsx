@@ -43,6 +43,14 @@ class TableauReport extends React.Component {
     // Only report is changed - re-initialize
     if (isReportChanged) {
       this.initTableau();
+      return;
+    }
+
+    // If a ticket has been allocated to the report - re-initialize
+    if (this.props.token == null && nextProps.token != null) {
+      this.setState({ didInvalidateToken: false });
+      this.initTableau();
+      return;
     }
 
     // Only filters are changed, apply via the API
