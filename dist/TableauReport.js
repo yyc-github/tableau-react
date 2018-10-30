@@ -38,14 +38,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var propTypes = {
-  filters: _react.PropTypes.object,
-  url: _react.PropTypes.string,
-  parameters: _react.PropTypes.object,
-  options: _react.PropTypes.object,
-  token: _react.PropTypes.string
-};
-
 var defaultProps = {
   loading: false,
   parameters: {},
@@ -266,9 +258,6 @@ var TableauReport = function (_React$Component) {
 
   return TableauReport;
 }(_react2.default.Component);
-
-TableauReport.propTypes = propTypes;
-TableauReport.defaultProps = defaultProps;
 
 exports.default = TableauReport;
 module.exports = exports['default'];

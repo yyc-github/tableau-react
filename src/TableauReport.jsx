@@ -1,17 +1,10 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
 import url from 'url';
 import { Promise } from 'es6-promise';
 import shallowequal from 'shallowequal';
 import tokenizeUrl from './tokenizeUrl';
 import Tableau from 'tableau-api';
 
-const propTypes = {
-  filters: PropTypes.object,
-  url: PropTypes.string,
-  parameters: PropTypes.object,
-  options: PropTypes.object,
-  token: PropTypes.string
-};
 
 const defaultProps = {
   loading: false,
@@ -193,8 +186,5 @@ class TableauReport extends React.Component {
     return <div ref={c => this.container = c} />;
   }
 }
-
-TableauReport.propTypes = propTypes;
-TableauReport.defaultProps = defaultProps;
 
 export default TableauReport;
