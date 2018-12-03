@@ -12,6 +12,10 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
 var _url = require('url');
 
 var _url2 = _interopRequireDefault(_url);
@@ -37,6 +41,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var propTypes = {
+  trustedAuthentication: _propTypes2.default.bool,
+  filters: _propTypes2.default.object,
+  url: _propTypes2.default.string,
+  parameters: _propTypes2.default.object,
+  options: _propTypes2.default.object,
+  token: _propTypes2.default.string
+};
 
 var defaultProps = {
   loading: false,
@@ -76,14 +89,6 @@ var TableauReport = function (_React$Component) {
       // Only report is changed - re-initialize
       if (isReportChanged) {
         this.initTableau();
-        return;
-      }
-
-      // If a ticket has been allocated to the report - re-initialize
-      if (this.props.token == null && nextProps.token != null) {
-        this.setState({ didInvalidateToken: false });
-        this.initTableau();
-        return;
       }
 
       // Only filters are changed, apply via the API
@@ -206,7 +211,9 @@ var TableauReport = function (_React$Component) {
       var appliedParameters = this.workbook && this.workbook.changeParameterValueAsync ? parameters : this.state.parameters;
       if (this.workbook && this.workbook.changeParameterValueAsync) {
         this.onComplete(promises, function () {
-          return _this3.setState({ loading: false, appliedParameters: appliedParameters });
+          return _this3.setState({ loading: false, appliedParameters: appliedParameters }, function () {
+            return console.log(_this3.state);
+          });
         });
       }
     }
@@ -258,6 +265,9 @@ var TableauReport = function (_React$Component) {
 
   return TableauReport;
 }(_react2.default.Component);
+
+TableauReport.propTypes = propTypes;
+TableauReport.defaultProps = defaultProps;
 
 exports.default = TableauReport;
 module.exports = exports['default'];

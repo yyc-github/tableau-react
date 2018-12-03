@@ -1,10 +1,19 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import url from 'url';
 import { Promise } from 'es6-promise';
 import shallowequal from 'shallowequal';
 import tokenizeUrl from './tokenizeUrl';
 import Tableau from 'tableau-api';
 
+const propTypes = {
+  trustedAuthentication: PropTypes.bool,
+  filters: PropTypes.object,
+  url: PropTypes.string,
+  parameters: PropTypes.object,
+  options: PropTypes.object,
+  token: PropTypes.string
+};
 
 const defaultProps = {
   loading: false,
@@ -36,14 +45,6 @@ class TableauReport extends React.Component {
     // Only report is changed - re-initialize
     if (isReportChanged) {
       this.initTableau();
-      return;
-    }
-
-    // If a ticket has been allocated to the report - re-initialize
-    if (this.props.token == null && nextProps.token != null) {
-      this.setState({ didInvalidateToken: false });
-      this.initTableau();
-      return;
     }
 
     // Only filters are changed, apply via the API
@@ -148,7 +149,7 @@ class TableauReport extends React.Component {
 
     const appliedParameters = this.workbook && this.workbook.changeParameterValueAsync ? parameters : this.state.parameters;
     if (this.workbook && this.workbook.changeParameterValueAsync) {
-      this.onComplete(promises, () => this.setState({ loading: false, appliedParameters }));
+      this.onComplete(promises, () => this.setState({ loading: false, appliedParameters }, () => console.log(this.state)));
     }
   }
 
@@ -186,5 +187,8 @@ class TableauReport extends React.Component {
     return <div ref={c => this.container = c} />;
   }
 }
+
+TableauReport.propTypes = propTypes;
+TableauReport.defaultProps = defaultProps;
 
 export default TableauReport;
