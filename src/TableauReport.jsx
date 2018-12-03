@@ -149,7 +149,7 @@ class TableauReport extends React.Component {
 
     const appliedParameters = this.workbook && this.workbook.changeParameterValueAsync ? parameters : this.state.parameters;
     if (this.workbook && this.workbook.changeParameterValueAsync) {
-      this.onComplete(promises, () => this.setState({ loading: false, appliedParameters }, () => console.log(this.state)));
+      this.onComplete(promises, () => this.setState({ loading: false, parameters: appliedParameters }));
     }
   }
 

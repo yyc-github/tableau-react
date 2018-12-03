@@ -211,9 +211,7 @@ var TableauReport = function (_React$Component) {
       var appliedParameters = this.workbook && this.workbook.changeParameterValueAsync ? parameters : this.state.parameters;
       if (this.workbook && this.workbook.changeParameterValueAsync) {
         this.onComplete(promises, function () {
-          return _this3.setState({ loading: false, appliedParameters: appliedParameters }, function () {
-            return console.log(_this3.state);
-          });
+          return _this3.setState({ loading: false, parameters: appliedParameters });
         });
       }
     }
