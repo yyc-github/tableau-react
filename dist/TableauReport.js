@@ -177,17 +177,24 @@ var TableauReport = function (_React$Component) {
     value: function applyFilters(filters) {
       var _this2 = this;
 
+      if (this.sheets == null) {
+        return;
+      }
       var REPLACE = _tableauApi2.default.FilterUpdateType.REPLACE;
       var promises = [];
-
       this.setState({ loading: true });
 
-      for (var key in filters) {
-        if (!this.state.filters.hasOwnProperty(key) || !this.compareArrays(this.state.filters[key], filters[key])) {
-          promises.push(this.sheet.applyFilterAsync(key, filters[key], REPLACE));
+      var _loop = function _loop(key) {
+        if (!_this2.state.filters.hasOwnProperty(key) || !_this2.compareArrays(_this2.state.filters[key], filters[key])) {
+          promises.push(_this2.sheets.map(function (sheet) {
+            return sheet.applyFilterAsync(key, filters[key], REPLACE);
+          }));
         }
-      }
+      };
 
+      for (var key in filters) {
+        _loop(key);
+      }
       this.onComplete(promises, function () {
         return _this2.setState({ loading: false, filters: filters });
       });
@@ -236,8 +243,6 @@ var TableauReport = function (_React$Component) {
         onFirstInteractive: function onFirstInteractive() {
           _this4.workbook = _this4.viz.getWorkbook();
           _this4.sheets = _this4.workbook.getActiveSheet().getWorksheets();
-          _this4.sheet = _this4.sheets[0];
-
           _this4.props.onLoad(new Date());
         }
       });

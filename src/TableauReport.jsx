@@ -113,22 +113,23 @@ class TableauReport extends React.Component {
    * @return {void}
    */
   applyFilters(filters) {
+    if(this.sheets == null) {
+      return;
+    }
     const REPLACE = Tableau.FilterUpdateType.REPLACE;
     const promises = [];
-
     this.setState({ loading: true });
 
     for (const key in filters) {
-      if (
-        !this.state.filters.hasOwnProperty(key) ||
-        !this.compareArrays(this.state.filters[key], filters[key])
-      ) {
-        promises.push(
-          this.sheet.applyFilterAsync(key, filters[key], REPLACE)
-        );
-      }
+        if (
+          !this.state.filters.hasOwnProperty(key) ||
+          !this.compareArrays(this.state.filters[key], filters[key])
+        ) {
+          promises.push(this.sheets.map(sheet => {
+            return sheet.applyFilterAsync(key, filters[key], REPLACE);
+          }));
+        }
     }
-
     this.onComplete(promises, () => this.setState({ loading: false, filters }));
   }
 
@@ -168,8 +169,6 @@ class TableauReport extends React.Component {
       onFirstInteractive: () => {
         this.workbook = this.viz.getWorkbook();
         this.sheets = this.workbook.getActiveSheet().getWorksheets();
-        this.sheet = this.sheets[0];
-
         this.props.onLoad(new Date());
       }
     };
@@ -179,6 +178,7 @@ class TableauReport extends React.Component {
       this.viz.dispose();
       this.viz = null;
     }
+
 
     this.viz = new Tableau.Viz(this.container, vizUrl, options);
   }
