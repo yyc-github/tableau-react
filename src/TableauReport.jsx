@@ -120,16 +120,25 @@ class TableauReport extends React.Component {
     const promises = [];
     this.setState({ loading: true });
 
-    for (const key in filters) {
-        if (
-          !this.state.filters.hasOwnProperty(key) ||
-          !this.compareArrays(this.state.filters[key], filters[key])
-        ) {
-          promises.push(this.sheets.map(sheet => {
+    Promise.all(this.sheets.map(x => x.getFiltersAsync()))
+    .then((result) => {
+      var filterSheetIndexMap = {};
+      result.forEach((arr, i) => {
+        arr.forEach(x => {
+          filterSheetIndexMap[x.getFieldName()] = filterSheetIndexMap[x.getFieldName()] || [];
+          filterSheetIndexMap[x.getFieldName()].push(i);
+        })
+      })
+      for (const key in filters) {
+        if (this.state.filters.hasOwnProperty(key)) {
+          var sheetIndexs = filterSheetIndexMap[key];
+          var sheets = this.sheets.filter((s, i) => sheetIndexs.indexOf(i) > -1);
+          promises.push(sheets.map(sheet => {
             return sheet.applyFilterAsync(key, filters[key], REPLACE);
           }));
         }
-    }
+      }
+    });
     this.onComplete(promises, () => this.setState({ loading: false, filters }));
   }
 
@@ -179,7 +188,7 @@ class TableauReport extends React.Component {
       this.viz = null;
     }
 
-
+    
     this.viz = new Tableau.Viz(this.container, vizUrl, options);
   }
 
