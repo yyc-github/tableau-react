@@ -184,37 +184,17 @@ var TableauReport = function (_React$Component) {
       var promises = [];
       this.setState({ loading: true });
 
-      _es6Promise.Promise.all(this.sheets.map(function (x) {
-        return x.getFiltersAsync();
-      })).then(function (result) {
-        var filterSheetIndexMap = {};
-        result.forEach(function (arr, i) {
-          arr.forEach(function (x) {
-            filterSheetIndexMap[x.getFieldName()] = filterSheetIndexMap[x.getFieldName()] || [];
-            filterSheetIndexMap[x.getFieldName()].push(i);
-          });
-        });
-
-        var _loop = function _loop(key) {
-          if (_this2.state.filters.hasOwnProperty(key)) {
-            sheetIndexs = filterSheetIndexMap[key];
-            sheets = _this2.sheets.filter(function (s, i) {
-              return sheetIndexs.indexOf(i) > -1;
-            });
-
-            promises.push(sheets.map(function (sheet) {
-              return sheet.applyFilterAsync(key, filters[key], REPLACE);
-            }));
-          }
-        };
-
-        for (var key in filters) {
-          var sheetIndexs;
-          var sheets;
-
-          _loop(key);
+      var _loop = function _loop(key) {
+        if (_this2.sheets && _this2.state.filters.hasOwnProperty(key)) {
+          promises.push(_this2.sheets.map(function (sheet) {
+            return sheet.applyFilterAsync(key, filters[key], REPLACE);
+          }));
         }
-      });
+      };
+
+      for (var key in filters) {
+        _loop(key);
+      }
       this.onComplete(promises, function () {
         return _this2.setState({ loading: false, filters: filters });
       });
@@ -259,9 +239,6 @@ var TableauReport = function (_React$Component) {
 
       var vizUrl = this.getUrl();
 
-      console.log(filters);
-      console.log(parameters);
-
       var options = _extends({}, filters, parameters, this.props.options, {
         onFirstInteractive: function onFirstInteractive() {
           _this4.workbook = _this4.viz.getWorkbook();
@@ -275,6 +252,7 @@ var TableauReport = function (_React$Component) {
         this.viz.dispose();
         this.viz = null;
       }
+
       this.viz = new _tableauApi2.default.Viz(this.container, vizUrl, options);
     }
   }, {
