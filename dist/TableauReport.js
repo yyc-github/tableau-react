@@ -157,7 +157,12 @@ var TableauReport = function (_React$Component) {
         return (0, _tokenizeUrl2.default)(this.props.url, token) + query;
       }
 
-      return parsed.protocol + '//' + parsed.host + parsed.pathname + query;
+      // site url
+      if (parsed.hash) {
+        return parsed.protocol + '//' + parsed.host + parsed.hash + query;
+      } else {
+        return parsed.protocol + '//' + parsed.host + parsed.pathname + query;
+      }
     }
   }, {
     key: 'invalidateToken',

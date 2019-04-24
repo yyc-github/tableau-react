@@ -99,7 +99,12 @@ class TableauReport extends React.Component {
       return tokenizeUrl(this.props.url, token) + query;
     }
 
-    return parsed.protocol + '//' + parsed.host + parsed.pathname + query;
+    // site url
+    if(parsed.hash) {
+      return parsed.protocol + '//' + parsed.host + parsed.hash + query;
+    } else {
+      return parsed.protocol + '//' + parsed.host + parsed.pathname + query;
+    }
   }
 
   invalidateToken() {
