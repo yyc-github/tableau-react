@@ -101,7 +101,7 @@ class TableauReport extends React.Component {
 
     // site url
     if(parsed.hash) {
-      return parsed.protocol + '//' + parsed.host + parsed.hash + query;
+      return parsed.protocol + '//' + parsed.host + '/' + parsed.hash + query;
     } else {
       return parsed.protocol + '//' + parsed.host + parsed.pathname + query;
     }
