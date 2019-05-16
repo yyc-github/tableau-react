@@ -37,24 +37,27 @@ class TableauReport extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const isReportChanged = nextProps.url !== this.props.url;
+    const isReportChanged = nextProps.url !== this.props.url || nextProps.query !== this.props.query;
     const isFiltersChanged = !shallowequal(this.state.filters, nextProps.filters, this.compareArrays);
     const isParametersChanged = !shallowequal(this.state.parameters, nextProps.parameters);
     const isLoading = this.state.loading;
 
+    
     // Only report is changed - re-initialize
-    if (isReportChanged) {
+    if (nextProps.forceRefresh || isReportChanged) {
       this.initTableau();
     }
 
     // Only filters are changed, apply via the API
-    if (!isReportChanged && isFiltersChanged && !isLoading) {
-      this.applyFilters(nextProps.filters);
+    if (!nextProps.forceRefresh && !isReportChanged && isFiltersChanged && !isLoading) {
+      this.initTableau();
+      //this.applyFilters(nextProps.filters);
     }
 
     // Only parameters are changed, apply via the API
-    if (!isReportChanged && isParametersChanged && !isLoading) {
-      this.applyParameters(nextProps.parameters);
+    if (!nextProps.forceRefresh && !isReportChanged && isParametersChanged && !isLoading) {
+      this.initTableau();
+      //this.applyParameters(nextProps.parameters);
     }
 
     // token change, validate it.
@@ -90,20 +93,21 @@ class TableauReport extends React.Component {
    * invalidating it to prevent it from being used more than once.
    */
   getUrl() {
-    const { token } = this.props;
+    const { token, query } = this.props;
     const parsed = url.parse(this.props.url, true);
-    const query = '?:embed=yes&:comments=no&:toolbar=yes&:refresh=yes';
+
+    const tquery = `?${query?(query+'&'):''}:embed=yes&:comments=no&:toolbar=yes&:refresh=yes`;
 
     if (!this.state.didInvalidateToken && token) {
       this.invalidateToken();
-      return tokenizeUrl(this.props.url, token) + query;
+      return tokenizeUrl(this.props.url, token) + tquery;
     }
 
     // site url
     if(parsed.hash) {
-      return parsed.protocol + '//' + parsed.host + '/' + parsed.hash + query;
+      return parsed.protocol + '//' + parsed.host + '/' + parsed.hash + tquery;
     } else {
-      return parsed.protocol + '//' + parsed.host + parsed.pathname + query;
+      return parsed.protocol + '//' + parsed.host + parsed.pathname + tquery;
     }
   }
 
@@ -161,6 +165,7 @@ class TableauReport extends React.Component {
   initTableau() {
     const { filters, parameters } = this.props;
     const vizUrl = this.getUrl();
+console.log(vizUrl);
 
     const options = {
       ...filters,

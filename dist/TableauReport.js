@@ -81,24 +81,26 @@ var TableauReport = function (_React$Component) {
   }, {
     key: 'componentWillReceiveProps',
     value: function componentWillReceiveProps(nextProps) {
-      var isReportChanged = nextProps.url !== this.props.url;
+      var isReportChanged = nextProps.url !== this.props.url || nextProps.query !== this.props.query;
       var isFiltersChanged = !(0, _shallowequal2.default)(this.state.filters, nextProps.filters, this.compareArrays);
       var isParametersChanged = !(0, _shallowequal2.default)(this.state.parameters, nextProps.parameters);
       var isLoading = this.state.loading;
 
       // Only report is changed - re-initialize
-      if (isReportChanged) {
+      if (nextProps.forceRefresh || isReportChanged) {
         this.initTableau();
       }
 
       // Only filters are changed, apply via the API
-      if (!isReportChanged && isFiltersChanged && !isLoading) {
-        this.applyFilters(nextProps.filters);
+      if (!nextProps.forceRefresh && !isReportChanged && isFiltersChanged && !isLoading) {
+        this.initTableau();
+        //this.applyFilters(nextProps.filters);
       }
 
       // Only parameters are changed, apply via the API
-      if (!isReportChanged && isParametersChanged && !isLoading) {
-        this.applyParameters(nextProps.parameters);
+      if (!nextProps.forceRefresh && !isReportChanged && isParametersChanged && !isLoading) {
+        this.initTableau();
+        //this.applyParameters(nextProps.parameters);
       }
 
       // token change, validate it.
@@ -147,21 +149,24 @@ var TableauReport = function (_React$Component) {
   }, {
     key: 'getUrl',
     value: function getUrl() {
-      var token = this.props.token;
+      var _props = this.props,
+          token = _props.token,
+          query = _props.query;
 
       var parsed = _url2.default.parse(this.props.url, true);
-      var query = '?:embed=yes&:comments=no&:toolbar=yes&:refresh=yes';
+
+      var tquery = '?' + (query ? query + '&' : '') + ':embed=yes&:comments=no&:toolbar=yes&:refresh=yes';
 
       if (!this.state.didInvalidateToken && token) {
         this.invalidateToken();
-        return (0, _tokenizeUrl2.default)(this.props.url, token) + query;
+        return (0, _tokenizeUrl2.default)(this.props.url, token) + tquery;
       }
 
       // site url
       if (parsed.hash) {
-        return parsed.protocol + '//' + parsed.host + '/' + parsed.hash + query;
+        return parsed.protocol + '//' + parsed.host + '/' + parsed.hash + tquery;
       } else {
-        return parsed.protocol + '//' + parsed.host + parsed.pathname + query;
+        return parsed.protocol + '//' + parsed.host + parsed.pathname + tquery;
       }
     }
   }, {
@@ -238,11 +243,12 @@ var TableauReport = function (_React$Component) {
     value: function initTableau() {
       var _this4 = this;
 
-      var _props = this.props,
-          filters = _props.filters,
-          parameters = _props.parameters;
+      var _props2 = this.props,
+          filters = _props2.filters,
+          parameters = _props2.parameters;
 
       var vizUrl = this.getUrl();
+      console.log(vizUrl);
 
       var options = _extends({}, filters, parameters, this.props.options, {
         onFirstInteractive: function onFirstInteractive() {
