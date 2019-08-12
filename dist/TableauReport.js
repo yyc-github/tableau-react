@@ -76,7 +76,7 @@ var TableauReport = function (_React$Component) {
   _createClass(TableauReport, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
-      this.initTableau();
+      this.initTableau(this.props.url);
     }
   }, {
     key: 'componentWillReceiveProps',
@@ -88,7 +88,7 @@ var TableauReport = function (_React$Component) {
 
       // Only report is changed - re-initialize
       if (isReportChanged) {
-        this.initTableau();
+        this.initTableau(nextProps.url);
       }
 
       // Only filters are changed, apply via the API
@@ -146,15 +146,15 @@ var TableauReport = function (_React$Component) {
 
   }, {
     key: 'getUrl',
-    value: function getUrl() {
+    value: function getUrl(tableauUrl) {
       var token = this.props.token;
 
-      var parsed = _url2.default.parse(this.props.url, true);
+      var parsed = _url2.default.parse(tableauUrl, true);
       var query = '?:embed=yes&:comments=no&:toolbar=yes&:refresh=yes';
 
       if (!this.state.didInvalidateToken && token) {
         this.invalidateToken();
-        return (0, _tokenizeUrl2.default)(this.props.url, token) + query;
+        return (0, _tokenizeUrl2.default)(tableauUrl, token) + query;
       }
 
       // site url
@@ -235,14 +235,14 @@ var TableauReport = function (_React$Component) {
 
   }, {
     key: 'initTableau',
-    value: function initTableau() {
+    value: function initTableau(tableauUrl) {
       var _this4 = this;
 
       var _props = this.props,
           filters = _props.filters,
           parameters = _props.parameters;
 
-      var vizUrl = this.getUrl();
+      var vizUrl = this.getUrl(tableauUrl);
 
       var options = _extends({}, filters, parameters, this.props.options, {
         onFirstInteractive: function onFirstInteractive() {
