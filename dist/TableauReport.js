@@ -34,6 +34,10 @@ var _tableauApi = require('tableau-api');
 
 var _tableauApi2 = _interopRequireDefault(_tableauApi);
 
+var _tabscale = require('tabscale');
+
+var _tabscale2 = _interopRequireDefault(_tabscale);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -76,7 +80,10 @@ var TableauReport = function (_React$Component) {
   _createClass(TableauReport, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
-      this.initTableau(this.props.url);
+      var tabScale = new _tabscale2.default.Scale(document.getElementById('tableauViz'));
+      if (this.props.url) {
+        this.initTableau(this.props.url);
+      }
     }
   }, {
     key: 'componentWillReceiveProps',
@@ -249,6 +256,7 @@ var TableauReport = function (_React$Component) {
           _this4.workbook = _this4.viz.getWorkbook();
           _this4.sheets = _this4.workbook.getActiveSheet().getWorksheets();
           _this4.props.onLoad(new Date());
+          tabScale.initialize();
         }
       });
 
@@ -267,7 +275,7 @@ var TableauReport = function (_React$Component) {
 
       return _react2.default.createElement('div', { ref: function ref(c) {
           return _this5.container = c;
-        } });
+        }, id: 'tableauViz' });
     }
   }]);
 

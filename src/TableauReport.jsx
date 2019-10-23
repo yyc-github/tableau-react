@@ -5,6 +5,7 @@ import { Promise } from 'es6-promise';
 import shallowequal from 'shallowequal';
 import tokenizeUrl from './tokenizeUrl';
 import Tableau from 'tableau-api';
+import TabScale from 'tabscale';
 
 const propTypes = {
   trustedAuthentication: PropTypes.bool,
@@ -33,7 +34,10 @@ class TableauReport extends React.Component {
   }
 
   componentDidMount() {
-    this.initTableau(this.props.url);
+    const tabScale = new TabScale.Scale(document.getElementById('tableauViz'))
+    if(this.props.url) {
+      this.initTableau(this.props.url);
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -171,6 +175,7 @@ class TableauReport extends React.Component {
         this.workbook = this.viz.getWorkbook();
         this.sheets = this.workbook.getActiveSheet().getWorksheets();
         this.props.onLoad(new Date());
+        tabScale.initialize();
       }
     };
 
@@ -185,7 +190,7 @@ class TableauReport extends React.Component {
   }
 
   render() {
-    return <div ref={c => this.container = c} />;
+    return <div ref={c => this.container = c} id='tableauViz'/>;
   }
 }
 
